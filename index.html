@@ -1,0 +1,1460 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário do Porteiro - Registro de TAGs e Controles</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.2em;
+            margin-bottom: 10px;
+            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1em;
+        }
+
+        .form-container {
+            padding: 40px;
+        }
+
+        /* Seção de verificação cadastral */
+        .verificacao-cadastral {
+            background: #fff3cd;
+            border: 2px solid #ffeaa7;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 30px;
+        }
+
+        .verificacao-cadastral h3 {
+            color: #856404;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .pergunta-cadastral {
+            background: white;
+            border: 2px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .pergunta-cadastral h4 {
+            color: #856404;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .opcoes-cadastral {
+            display: flex;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+
+        .opcao-cadastral {
+            flex: 1;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .opcao-cadastral:hover {
+            border-color: #ffeaa7;
+            background: #fffbf0;
+        }
+
+        .opcao-cadastral.selected {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .opcao-cadastral input[type="radio"] {
+            margin-right: 8px;
+        }
+
+        .alerta-atualizacao {
+            background: #f8d7da;
+            border: 2px solid #f5c6cb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .alerta-atualizacao.show {
+            display: block;
+        }
+
+        .alerta-atualizacao h4 {
+            color: #721c24;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .alerta-atualizacao p {
+            color: #721c24;
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        .link-atualizacao {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 15px;
+            margin: 15px 0;
+            word-break: break-all;
+            font-family: monospace;
+            font-size: 0.9em;
+        }
+
+        .btn-whatsapp {
+            background: #25d366;
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            text-decoration: none;
+        }
+
+        .btn-whatsapp:hover {
+            background: #128c7e;
+            transform: translateY(-2px);
+        }
+
+        .formulario-principal {
+            display: none;
+        }
+
+        .formulario-principal.show {
+            display: block;
+        }
+
+        .regras-info {
+            background: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .regras-info h3 {
+            color: #495057;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+        }
+
+        .regras-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 15px;
+        }
+
+        .regra-box {
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .regra-contribuinte {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+        }
+
+        .regra-nao-contribuinte {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+            font-size: 0.95em;
+        }
+
+        input, select, textarea {
+            padding: 12px 15px;
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            background: #fafbfc;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: #2c3e50;
+            background: white;
+            box-shadow: 0 0 0 3px rgba(44, 62, 80, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin: 0;
+        }
+
+        .items-selection {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-top: 10px;
+        }
+
+        .item-card {
+            border: 2px solid #e1e5e9;
+            border-radius: 12px;
+            padding: 20px;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .item-card:hover {
+            border-color: #2c3e50;
+            background: #f8f9fa;
+        }
+
+        .item-card.selected {
+            border-color: #28a745;
+            background: #f0fff4;
+        }
+
+        .item-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .item-header input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+        }
+
+        .item-header h4 {
+            margin: 0;
+            font-size: 1.1em;
+            color: #2c3e50;
+        }
+
+        .item-details {
+            display: none;
+            margin-top: 15px;
+        }
+
+        .item-details.show {
+            display: block;
+        }
+
+        .quantidade-input {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin: 10px 0;
+        }
+
+        .quantidade-input input {
+            width: 80px;
+            padding: 8px;
+            text-align: center;
+        }
+
+        .direitos-info {
+            background: #e8f5e8;
+            border: 1px solid #28a745;
+            border-radius: 6px;
+            padding: 10px;
+            margin: 10px 0;
+            font-size: 0.85em;
+            color: #155724;
+        }
+
+        .valores-section {
+            background: #f8fbff;
+            border: 2px solid #e3f2fd;
+            border-radius: 12px;
+            padding: 25px;
+            margin: 25px 0;
+        }
+
+        .valores-section h3 {
+            color: #1976d2;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+
+        .calculo-detalhado {
+            background: white;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+        }
+
+        .item-calculo {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #eee;
+        }
+
+        .item-calculo:last-child {
+            border-bottom: none;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #28a745;
+        }
+
+        /* Seção PIX com layout reorganizado */
+        .pix-section {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%);
+            border: 3px solid #0ea5e9;
+            border-radius: 15px;
+            padding: 30px;
+            margin: 30px 0;
+            display: none;
+            box-shadow: 0 10px 25px rgba(14, 165, 233, 0.1);
+        }
+
+        .pix-section.show {
+            display: block;
+            animation: slideIn 0.5s ease-out;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pix-header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .pix-icon {
+            width: 50px;
+            height: 50px;
+            background: #0ea5e9;
+            border-radius: 12px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2em;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .pix-section h3 {
+            color: #0c4a6e;
+            font-size: 1.4em;
+            margin: 0;
+            font-weight: 700;
+        }
+
+        .valor-destaque {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            font-size: 2em;
+            font-weight: bold;
+            margin: 25px 0;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(16, 185, 129, 0.3);
+        }
+
+        /* Layout: Dados PIX ao lado do QR Code */
+        .pix-dados-qr {
+            display: grid;
+            grid-template-columns: 1fr 280px;
+            gap: 30px;
+            align-items: start;
+            margin-bottom: 25px;
+        }
+
+        .dados-pix {
+            background: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
+        }
+
+        .dados-pix h4 {
+            color: #0ea5e9;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .dado-linha {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px 0;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9em;
+        }
+
+        .dado-linha:last-child {
+            border-bottom: none;
+        }
+
+        .dado-linha strong {
+            color: #475569;
+            font-weight: 600;
+        }
+
+        .dado-linha span {
+            color: #1e293b;
+            font-weight: 500;
+        }
+
+        .qr-container {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            border: 2px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .qr-title {
+            color: #0ea5e9;
+            font-weight: 600;
+            margin-bottom: 15px;
+            font-size: 1em;
+        }
+
+        .qr-code-image {
+            width: 240px;
+            height: 240px;
+            border-radius: 8px;
+            border: 2px solid #f1f5f9;
+            background: white;
+            object-fit: contain;
+        }
+
+        /* Instruções embaixo dos dados e QR Code */
+        .instrucoes-pagamento {
+            background: white;
+            border: 2px solid #0ea5e9;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+
+        .instrucoes-pagamento h4 {
+            color: #0ea5e9;
+            margin-bottom: 20px;
+            font-size: 1.2em;
+            font-weight: 600;
+            text-align: center;
+        }
+
+        .passo {
+            display: flex;
+            align-items: flex-start;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 1em;
+            line-height: 1.4;
+        }
+
+        .passo-numero {
+            background: #0ea5e9;
+            color: white;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.9em;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+
+        .chave-pix-destaque {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border: 2px solid #f59e0b;
+            border-radius: 8px;
+            padding: 15px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #92400e;
+            font-size: 1.3em;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(245, 158, 11, 0.2);
+        }
+
+        .valor-informar {
+            background: #fee2e2;
+            border: 2px solid #ef4444;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            text-align: center;
+        }
+
+        .valor-informar strong {
+            color: #dc2626;
+            font-size: 1.2em;
+        }
+
+        .btn-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            min-width: 150px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(44, 62, 80, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+
+        .success-message {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            display: none;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 768px) {
+            .form-grid, .regras-grid {
+                grid-template-columns: 1fr;
+                gap: 20px;
+            }
+            
+            .items-selection {
+                grid-template-columns: 1fr;
+            }
+            
+            .pix-dados-qr {
+                grid-template-columns: 1fr;
+                gap: 25px;
+            }
+            
+            .container {
+                margin: 10px;
+            }
+            
+            .form-container {
+                padding: 20px;
+            }
+
+            .btn-container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .btn {
+                width: 100%;
+                max-width: 300px;
+            }
+
+            .opcoes-cadastral {
+                flex-direction: column;
+                gap: 10px;
+            }
+
+            .valor-destaque {
+                font-size: 1.6em;
+                padding: 15px;
+            }
+
+            .qr-code-image {
+                width: 200px;
+                height: 200px;
+            }
+
+            .chave-pix-destaque {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🏠 Registro de TAGs e Controles</h1>
+            <p>Sistema do Porteiro - Controle de Entregas</p>
+        </div>
+
+        <div class="form-container">
+            <!-- Seção de Verificação Cadastral -->
+            <div class="verificacao-cadastral">
+                <h3>📋 Verificação Cadastral Obrigatória</h3>
+                
+                <div class="pergunta-cadastral">
+                    <h4>Você (ou alguém do seu apartamento) já atualizou os dados cadastrais no formulário oficial do condomínio?</h4>
+                    
+                    <div class="opcoes-cadastral">
+                        <div class="opcao-cadastral" onclick="selecionarOpcaoCadastral('sim')">
+                            <input type="radio" name="cadastroAtualizado" value="sim" id="cadastroSim">
+                            <label for="cadastroSim">✅ Sim, já atualizamos</label>
+                        </div>
+                        <div class="opcao-cadastral" onclick="selecionarOpcaoCadastral('nao')">
+                            <input type="radio" name="cadastroAtualizado" value="nao" id="cadastroNao">
+                            <label for="cadastroNao">❌ Não, ainda não atualizamos</label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Alerta para atualização -->
+                <div class="alerta-atualizacao" id="alertaAtualizacao">
+                    <h4>⚠️ Atualização Cadastral Necessária</h4>
+                    <p>Para prosseguir com o registro de TAGs e Controles, é <strong>obrigatório</strong> que os dados cadastrais do seu apartamento estejam atualizados no sistema do condomínio.</p>
+                    
+                    <p><strong>Por favor, acesse o link abaixo e atualize seus dados:</strong></p>
+                    
+                    <div class="link-atualizacao">
+                        https://forms.gle/YtRhUQSupNXgK7NQA
+                    </div>
+                    
+                    <p>Após atualizar os dados, retorne aqui e marque "Sim, já atualizamos" para continuar.</p>
+                    
+                    <a href="https://api.whatsapp.com/send?text=🏠%20*Atualização%20Cadastral%20-%20Condomínio*%0A%0ALink%20para%20atualizar%20dados%20cadastrais:%0Ahttps://forms.gle/YtRhUQSupNXgK7NQA%0A%0A📝%20É%20obrigatório%20atualizar%20antes%20de%20solicitar%20TAGs%20e%20Controles." 
+                       target="_blank" 
+                       class="btn-whatsapp">
+                        📱 Compartilhar Link via WhatsApp
+                    </a>
+                </div>
+            </div>
+
+            <!-- Formulário Principal (só aparece após confirmação) -->
+            <div class="formulario-principal" id="formularioPrincipal">
+                <!-- Informações das Regras -->
+                <div class="regras-info">
+                    <h3>📋 Regras do Condomínio</h3>
+                    <div class="regras-grid">
+                        <div class="regra-box regra-contribuinte">
+                            <strong>✅ CONTRIBUINTES - DIREITOS INCLUSOS</strong><br>
+                            • 1 TAG gratuita + acesso Wi-Fi<br>
+                            • 1 Controle gratuito + acesso câmeras<br>
+                            • Recepção de mercadorias<br>
+                            <strong>ADICIONAIS:</strong> TAG R$ 20,00 | Controle R$ 70,00
+                        </div>
+                        <div class="regra-box regra-nao-contribuinte">
+                            <strong>❌ NÃO CONTRIBUINTES</strong><br>
+                            • TAG: R$ 50,00 (máx. 1)<br>
+                            • Controle: R$ 100,00 (máx. 1)<br>
+                            • Sem Wi-Fi, câmeras e recepção
+                        </div>
+                    </div>
+                </div>
+
+                <form id="tagForm">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="morador">👤 Morador:</label>
+                            <input type="text" id="morador" name="morador" list="moradoresList" placeholder="Digite nome ou telefone..." required>
+                            <datalist id="moradoresList"></datalist>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="telefone">📞 Telefone:</label>
+                            <input type="tel" id="telefone" name="telefone" placeholder="(21) 99999-9999">
+                        </div>
+
+                        <div class="form-group">
+                            <label>💰 É Contribuinte do Condomínio?</label>
+                            <div class="checkbox-group">
+                                <input type="checkbox" id="contribuinte" name="contribuinte">
+                                <label for="contribuinte">Sim, contribui com a cota</label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group full-width">
+                        <label>🎯 Selecione os Itens:</label>
+                        <div class="items-selection">
+                            <!-- TAG Card -->
+                            <div class="item-card" id="tagCard">
+                                <div class="item-header">
+                                    <input type="checkbox" id="selecionarTag" name="tipoItem" value="TAG">
+                                    <h4>🏷️ TAG de Acesso</h4>
+                                </div>
+                                <div class="item-details" id="tagDetails">
+                                    <div class="quantidade-input">
+                                        <label>Quantidade:</label>
+                                        <input type="number" id="qtdTag" min="1" max="4" value="1">
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reposicaoTag">
+                                        <label for="reposicaoTag">Reposição por perda/roubo</label>
+                                    </div>
+                                    <div class="direitos-info" id="direitosTag">
+                                        ℹ️ Direitos serão calculados automaticamente
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Controle Card -->
+                            <div class="item-card" id="controleCard">
+                                <div class="item-header">
+                                    <input type="checkbox" id="selecionarControle" name="tipoItem" value="Controle">
+                                    <h4>📱 Controle Remoto</h4>
+                                </div>
+                                <div class="item-details" id="controleDetails">
+                                    <div class="quantidade-input">
+                                        <label>Quantidade:</label>
+                                        <input type="number" id="qtdControle" min="1" max="3" value="1">
+                                    </div>
+                                    <div class="checkbox-group">
+                                        <input type="checkbox" id="reposicaoControle">
+                                        <label for="reposicaoControle">Reposição por perda/roubo</label>
+                                    </div>
+                                    <div class="direitos-info" id="direitosControle">
+                                        ℹ️ Direitos serão calculados automaticamente
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="valores-section">
+                        <h3>💰 Cálculo Detalhado</h3>
+                        <div class="calculo-detalhado" id="calculoDetalhado">
+                            <div class="item-calculo">
+                                <span>Nenhum item selecionado</span>
+                                <span>R$ 0,00</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Seção PIX Reorganizada - só aparece quando há valor a pagar -->
+                    <div class="pix-section" id="pixSection">
+                        <div class="pix-header">
+                            <div class="pix-icon">PIX</div>
+                            <h3>Pagamento via PIX</h3>
+                        </div>
+                        
+                        <div class="valor-destaque">
+                            R$ <span id="valorPixDisplay">0,00</span>
+                        </div>
+                        
+                        <!-- Dados PIX ao lado do QR Code -->
+                        <div class="pix-dados-qr">
+                            <div class="dados-pix">
+                                <h4>📋 Dados para Conferência</h4>
+                                <div class="dado-linha">
+                                    <strong>Beneficiário:</strong>
+                                    <span>Jullia Andrade Barreto</span>
+                                </div>
+                                <div class="dado-linha">
+                                    <strong>CPF:</strong>
+                                    <span>186.113.407-01</span>
+                                </div>
+                                <div class="dado-linha">
+                                    <strong>Chave PIX:</strong>
+                                    <span>+55 21 96725-4279</span>
+                                </div>
+                                <div class="dado-linha">
+                                    <strong>Banco:</strong>
+                                    <span>Pan (623)</span>
+                                </div>
+                                <div class="dado-linha">
+                                    <strong>Agência:</strong>
+                                    <span>0001</span>
+                                </div>
+                                <div class="dado-linha">
+                                    <strong>Conta Corrente:</strong>
+                                    <span>022798569-0</span>
+                                </div>
+                            </div>
+                            
+                            <div class="qr-container">
+                                <div class="qr-title">🔗 Seu QR Code de Cobrança:</div>
+                                <img src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAYEBQYFBAYGBQYHBwYIChAKCgkJChQODwwQFxQYGBcUFhYaHSUfGhsjHBYWICwgIyYnKSopGR8tMC0oMCUoKSj/2wBDAQcHBwoIChMKChMoGhYaKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCgoKCj/wAARCAAPAA8DASIAAhEBAxEB/8QAFwAAAwEAAAAAAAAAAAAAAAAAAAECA//EACQQAAIBAwMEAwEAAAAAAAAAAAECEQADITESQVFhcQQTgZGh/8QAFQEBAQAAAAAAAAAAAAAAAAAAAgP/xAAXEQEBAQEAAAAAAAAAAAAAAAABAAIR/9oADAMBAAIRAxEAPwDVuXbdq2XuOqKOWYgD8mq/kfqLaQbNlnP8mAP7NZHyPmXL7hWIVBwg4+TzVKxbLuFUZJwBXRGKjbdxnZnYsxMkkyT9mpVKlXQf/9k=" 
+                                     alt="QR Code PIX" 
+                                     class="qr-code-image" 
+                                     id="qrCodeImage">
+                            </div>
+                        </div>
+                        
+                        <!-- Instruções embaixo dos dados e QR Code -->
+                        <div class="instrucoes-pagamento">
+                            <h4>📱 Como pagar:</h4>
+                            
+                            <div class="passo">
+                                <div class="passo-numero">1</div>
+                                <div>Abra seu app bancário</div>
+                            </div>
+                            
+                            <div class="passo">
+                                <div class="passo-numero">2</div>
+                                <div>Escaneie o QR Code ao lado</div>
+                            </div>
+                            
+                            <div class="passo">
+                                <div class="passo-numero">3</div>
+                                <div>Ou use a chave PIX:</div>
+                            </div>
+                            
+                            <div class="chave-pix-destaque">
+                                21967254279
+                            </div>
+                            
+                            <div class="valor-informar">
+                                <strong>⚠️ Valor a informar: R$ <span id="valorPixInfo">0,00</span></strong>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="responsavel">👮 Responsável (Porteiro):</label>
+                            <input type="text" id="responsavel" name="responsavel" placeholder="Seu nome" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="observacoes">📝 Observações:</label>
+                            <textarea id="observacoes" name="observacoes" rows="3" placeholder="Observações adicionais..."></textarea>
+                        </div>
+                    </div>
+
+                    <div class="btn-container">
+                        <button type="button" class="btn btn-secondary" onclick="limparFormulario()">🔄 Limpar</button>
+                        <button type="submit" class="btn btn-primary">💾 Registrar no Sistema</button>
+                    </div>
+
+                    <div class="success-message" id="successMessage">
+                        ✅ Registro salvo com sucesso!
+                    </div>
+
+                    <div class="error-message" id="errorMessage">
+                        ❌ Erro ao salvar registro. Tente novamente.
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configurações PIX
+        const PIX_CONFIG = {
+            chavePix: '21967254279', // Apenas números para o QR Code
+            chavePixFormatada: '+55 21 96725-4279', // Formatada para exibição
+            nome: 'Jullia Andrade Barreto',
+            cpf: '186.113.407-01',
+            banco: 'Pan (623)',
+            agencia: '0001',
+            conta: '022798569-0'
+        };
+
+        // URL do Google Apps Script - ATUALIZE AQUI COM SUA URL
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbzBEwrCJyZ31u1sEvhzUs9wy_lAK6x-hYj1hEj3k0We5vsibZZ9pKCa_FejCIVsmFGt/exec';
+
+        // Regras de preços e direitos
+        const REGRAS = {
+            contribuinte: {
+                direitos: { tag: 1, controle: 1 }, // O que tem direito gratuitamente
+                precos: { tag: 20, controle: 70 }, // Preços adicionais
+                limites: { tag: 4, controle: 3 } // Limites máximos
+            },
+            naoContribuinte: {
+                direitos: { tag: 0, controle: 0 }, // Não tem direitos
+                precos: { tag: 50, controle: 100 }, // Preços unitários
+                limites: { tag: 1, controle: 1 } // Limites máximos
+            }
+        };
+
+        // Dados simulados de moradores
+        const moradores = [
+            { nome: 'João Silva', telefone: '21987654321', contribuinte: true, residencia: 'Casa 10' },
+            { nome: 'Maria Santos', telefone: '21987654322', contribuinte: true, residencia: 'Lote 25' },
+            { nome: 'Pedro Oliveira', telefone: '21987654323', contribuinte: false, residencia: 'Casa 15' },
+            { nome: 'Ana Costa', telefone: '21987654324', contribuinte: true, residencia: 'Apt 302' },
+            { nome: 'Carlos Souza', telefone: '21987654325', contribuinte: false, residencia: 'Lote 08' }
+        ];
+
+        let valorTotalGlobal = 0;
+
+        // Inicialização
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('=== INICIALIZANDO SISTEMA ===');
+            carregarMoradores();
+            configurarEventos();
+            // Forçar primeira execução do cálculo
+            setTimeout(atualizarCalculos, 100);
+        });
+
+        function selecionarOpcaoCadastral(opcao) {
+            console.log('Opção cadastral selecionada:', opcao);
+            
+            // Remover seleção anterior
+            document.querySelectorAll('.opcao-cadastral').forEach(el => {
+                el.classList.remove('selected');
+            });
+            
+            // Marcar opção selecionada
+            const opcaoElement = document.querySelector(`input[value="${opcao}"]`).closest('.opcao-cadastral');
+            opcaoElement.classList.add('selected');
+            
+            // Marcar radio button
+            document.getElementById(opcao === 'sim' ? 'cadastroSim' : 'cadastroNao').checked = true;
+            
+            if (opcao === 'sim') {
+                // Mostrar formulário principal
+                document.getElementById('alertaAtualizacao').classList.remove('show');
+                document.getElementById('formularioPrincipal').classList.add('show');
+                console.log('Formulário principal liberado');
+            } else {
+                // Mostrar alerta de atualização
+                document.getElementById('alertaAtualizacao').classList.add('show');
+                document.getElementById('formularioPrincipal').classList.remove('show');
+                console.log('Alerta de atualização mostrado');
+            }
+        }
+
+        function carregarMoradores() {
+            console.log('Carregando lista de moradores...');
+            const datalist = document.getElementById('moradoresList');
+            moradores.forEach(morador => {
+                const option = document.createElement('option');
+                option.value = `${morador.nome} - ${formatarTelefone(morador.telefone)}`;
+                option.dataset.nome = morador.nome;
+                option.dataset.telefone = morador.telefone;
+                option.dataset.contribuinte = morador.contribuinte;
+                option.dataset.residencia = morador.residencia;
+                datalist.appendChild(option);
+            });
+            console.log('Moradores carregados:', moradores.length);
+        }
+
+        function configurarEventos() {
+            console.log('Configurando eventos...');
+            
+            // Autocomplete de morador
+            document.getElementById('morador').addEventListener('input', function(e) {
+                const valor = e.target.value;
+                console.log('Morador digitado:', valor);
+                
+                const option = Array.from(document.getElementById('moradoresList').options)
+                    .find(opt => opt.value === valor);
+                
+                if (option) {
+                    console.log('Morador encontrado:', option.dataset);
+                    document.getElementById('telefone').value = formatarTelefone(option.dataset.telefone);
+                    document.getElementById('contribuinte').checked = option.dataset.contribuinte === 'true';
+                    atualizarCalculos();
+                }
+            });
+
+            // Permitir edição manual do telefone
+            document.getElementById('telefone').addEventListener('input', function(e) {
+                const valor = e.target.value;
+                // Aplicar máscara de telefone
+                const valorLimpo = valor.replace(/\D/g, '');
+                if (valorLimpo.length <= 11) {
+                    e.target.value = formatarTelefone(valorLimpo);
+                }
+            });
+
+            // Eventos que recalculam valores
+            document.getElementById('contribuinte').addEventListener('change', atualizarCalculos);
+
+            // Seleção de itens
+            document.getElementById('selecionarTag').addEventListener('change', function() {
+                toggleItemCard('tag', this.checked);
+            });
+
+            document.getElementById('selecionarControle').addEventListener('change', function() {
+                toggleItemCard('controle', this.checked);
+            });
+
+            // Quantidades e reposições
+            ['qtdTag', 'qtdControle', 'reposicaoTag', 'reposicaoControle'].forEach(id => {
+                const element = document.getElementById(id);
+                if (element) {
+                    element.addEventListener('change', atualizarCalculos);
+                }
+            });
+
+            // Form submit
+            document.getElementById('tagForm').addEventListener('submit', salvarRegistro);
+            
+            console.log('Eventos configurados com sucesso');
+        }
+
+        function toggleItemCard(tipo, selecionado) {
+            console.log(`Toggleando ${tipo}:`, selecionado);
+            const card = document.getElementById(`${tipo}Card`);
+            const details = document.getElementById(`${tipo}Details`);
+            
+            if (selecionado) {
+                card.classList.add('selected');
+                details.classList.add('show');
+            } else {
+                card.classList.remove('selected');
+                details.classList.remove('show');
+            }
+            
+            // Forçar recálculo
+            setTimeout(atualizarCalculos, 50);
+        }
+
+        function atualizarCalculos() {
+            console.log('=== INICIANDO CÁLCULO ===');
+            const contribuinte = document.getElementById('contribuinte').checked;
+            const tipoUsuario = contribuinte ? 'contribuinte' : 'naoContribuinte';
+            const regras = REGRAS[tipoUsuario];
+            
+            console.log('Contribuinte:', contribuinte, 'Tipo usuário:', tipoUsuario);
+            
+            let calculoHtml = '';
+            let valorTotal = 0;
+            
+            // Calcular TAG
+            if (document.getElementById('selecionarTag').checked) {
+                const qtd = parseInt(document.getElementById('qtdTag').value) || 1;
+                const reposicao = document.getElementById('reposicaoTag').checked;
+                
+                let valorTag = 0;
+                let explicacao = '';
+                
+                console.log('Calculando TAG - Qtd:', qtd, 'Reposição:', reposicao, 'Contribuinte:', contribuinte);
+                
+                if (contribuinte && !reposicao) {
+                    // Contribuinte tem direito a 1 TAG gratuita
+                    const tagsPagas = Math.max(0, qtd - regras.direitos.tag);
+                    valorTag = tagsPagas * regras.precos.tag;
+                    explicacao = qtd === 1 ? 
+                        `${qtd} TAG (incluída nos direitos)` : 
+                        `${regras.direitos.tag} inclusa + ${tagsPagas} × R$ ${regras.precos.tag.toFixed(2)} = R$ ${valorTag.toFixed(2)}`;
+                } else {
+                    // Não contribuinte ou reposição - todas são pagas
+                    const preco = contribuinte ? regras.precos.tag : REGRAS.naoContribuinte.precos.tag;
+                    valorTag = qtd * preco;
+                    explicacao = `${qtd} × R$ ${preco.toFixed(2)} = R$ ${valorTag.toFixed(2)}`;
+                    if (reposicao) explicacao += ' (Reposição)';
+                }
+                
+                console.log('Valor TAG calculado:', valorTag);
+                
+                calculoHtml += `
+                    <div class="item-calculo">
+                        <span>🏷️ TAG: ${explicacao}</span>
+                        <span>R$ ${valorTag.toFixed(2)}</span>
+                    </div>
+                `;
+                valorTotal += valorTag;
+                
+                // Atualizar info de direitos
+                document.getElementById('direitosTag').innerHTML = 
+                    contribuinte ? `✅ Direito: ${regras.direitos.tag} TAG gratuita` : 
+                    `⚠️ Todas as TAGs são pagas (R$ ${REGRAS.naoContribuinte.precos.tag.toFixed(2)} cada)`;
+            }
+            
+            // Calcular Controle
+            if (document.getElementById('selecionarControle').checked) {
+                const qtd = parseInt(document.getElementById('qtdControle').value) || 1;
+                const reposicao = document.getElementById('reposicaoControle').checked;
+                
+                let valorControle = 0;
+                let explicacao = '';
+                
+                console.log('Calculando Controle - Qtd:', qtd, 'Reposição:', reposicao, 'Contribuinte:', contribuinte);
+                
+                if (contribuinte && !reposicao) {
+                    // Contribuinte tem direito a 1 controle gratuito
+                    const controlesPagos = Math.max(0, qtd - regras.direitos.controle);
+                    valorControle = controlesPagos * regras.precos.controle;
+                    explicacao = qtd === 1 ? 
+                        `${qtd} Controle (incluído nos direitos)` : 
+                        `${regras.direitos.controle} incluso + ${controlesPagos} × R$ ${regras.precos.controle.toFixed(2)} = R$ ${valorControle.toFixed(2)}`;
+                } else {
+                    // Não contribuinte ou reposição - todos são pagos
+                    const preco = contribuinte ? regras.precos.controle : REGRAS.naoContribuinte.precos.controle;
+                    valorControle = qtd * preco;
+                    explicacao = `${qtd} × R$ ${preco.toFixed(2)} = R$ ${valorControle.toFixed(2)}`;
+                    if (reposicao) explicacao += ' (Reposição)';
+                }
+                
+                console.log('Valor Controle calculado:', valorControle);
+                
+                calculoHtml += `
+                    <div class="item-calculo">
+                        <span>📱 Controle: ${explicacao}</span>
+                        <span>R$ ${valorControle.toFixed(2)}</span>
+                    </div>
+                `;
+                valorTotal += valorControle;
+                
+                // Atualizar info de direitos
+                document.getElementById('direitosControle').innerHTML = 
+                    contribuinte ? `✅ Direito: ${regras.direitos.controle} Controle gratuito` : 
+                    `⚠️ Todos os controles são pagos (R$ ${REGRAS.naoContribuinte.precos.controle.toFixed(2)} cada)`;
+            }
+            
+            // Finalizar cálculo
+            if (valorTotal === 0) {
+                calculoHtml = `
+                    <div class="item-calculo">
+                        <span>Nenhum valor a cobrar</span>
+                        <span>R$ 0,00</span>
+                    </div>
+                `;
+            } else {
+                calculoHtml += `
+                    <div class="item-calculo">
+                        <span><strong>TOTAL A PAGAR</strong></span>
+                        <span><strong>R$ ${valorTotal.toFixed(2)}</strong></span>
+                    </div>
+                `;
+            }
+            
+            document.getElementById('calculoDetalhado').innerHTML = calculoHtml;
+            valorTotalGlobal = valorTotal;
+            
+            console.log('Valor total calculado:', valorTotal);
+            
+            // Mostrar/ocultar seção PIX apenas se há valor a pagar
+            const pixSection = document.getElementById('pixSection');
+            if (valorTotal > 0) {
+                console.log('Mostrando seção PIX para valor:', valorTotal);
+                document.getElementById('valorPixDisplay').textContent = 
+                    valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                document.getElementById('valorPixInfo').textContent = 
+                    valorTotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+                pixSection.classList.add('show');
+            } else {
+                console.log('Ocultando seção PIX - valor zero');
+                pixSection.classList.remove('show');
+            }
+        }
+
+        function salvarRegistro(e) {
+            e.preventDefault();
+            console.log('=== SALVANDO REGISTRO ===');
+            
+            if (!validarFormulario()) {
+                return;
+            }
+            
+            const dados = coletarDados();
+            console.log('Dados coletados:', dados);
+            
+            // Enviar para Google Apps Script
+            enviarParaAppsScript(dados);
+        }
+
+        function validarFormulario() {
+            console.log('Validando formulário...');
+            
+            const morador = document.getElementById('morador').value.trim();
+            const responsavel = document.getElementById('responsavel').value.trim();
+            
+            const tagSelecionada = document.getElementById('selecionarTag').checked;
+            const controleSelecionado = document.getElementById('selecionarControle').checked;
+            
+            if (!morador || !responsavel) {
+                mostrarMensagem('error', 'Preencha todos os campos obrigatórios: Morador e Responsável.');
+                return false;
+            }
+            
+            if (!tagSelecionada && !controleSelecionado) {
+                mostrarMensagem('error', 'Selecione pelo menos um item (TAG ou Controle).');
+                return false;
+            }
+            
+            console.log('Formulário válido');
+            return true;
+        }
+
+        function coletarDados() {
+            const contribuinte = document.getElementById('contribuinte').checked;
+            
+            let itens = [];
+            
+            // Coletar dados da TAG
+            if (document.getElementById('selecionarTag').checked) {
+                itens.push({
+                    tipo: 'TAG',
+                    quantidade: parseInt(document.getElementById('qtdTag').value),
+                    reposicao: document.getElementById('reposicaoTag').checked
+                });
+            }
+            
+            // Coletar dados do Controle
+            if (document.getElementById('selecionarControle').checked) {
+                itens.push({
+                    tipo: 'Controle',
+                    quantidade: parseInt(document.getElementById('qtdControle').value),
+                    reposicao: document.getElementById('reposicaoControle').checked
+                });
+            }
+            
+            return {
+                dataHora: new Date().toISOString(),
+                protocolo: gerarProtocolo(),
+                nome: document.getElementById('morador').value.split(' - ')[0],
+                telefone: limparTelefone(document.getElementById('telefone').value),
+                contribuinte: contribuinte ? 'SIM' : 'NÃO',
+                itens: itens,
+                valorTotal: valorTotalGlobal,
+                formaPagamento: valorTotalGlobal > 0 ? 'PIX' : 'Isento',
+                responsavel: document.getElementById('responsavel').value.trim(),
+                observacoes: document.getElementById('observacoes').value.trim(),
+                ip: 'N/A',
+                userAgent: navigator.userAgent,
+                cadastroAtualizado: document.querySelector('input[name="cadastroAtualizado"]:checked')?.value || 'nao'
+            };
+        }
+
+        function enviarParaAppsScript(dados) {
+            console.log('=== ENVIANDO PARA APPS SCRIPT ===');
+            console.log('URL:', SCRIPT_URL);
+            console.log('Dados:', dados);
+            
+            const loadingBtn = document.querySelector('.btn-primary');
+            const textoOriginal = loadingBtn.textContent;
+            loadingBtn.textContent = '⏳ Enviando...';
+            loadingBtn.disabled = true;
+            
+            // Primeiro tentar com CORS normal
+            fetch(SCRIPT_URL, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(dados)
+            })
+            .then(response => {
+                console.log('Resposta recebida:', response.status, response.statusText);
+                if (response.ok) {
+                    return response.json();
+                } else {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+            })
+            .then(result => {
+                console.log('Resultado:', result);
+                if (result.success) {
+                    mostrarMensagem('success', `✅ Registro salvo com sucesso! Protocolo: ${dados.protocolo}`);
+                    setTimeout(() => {
+                        limparFormulario();
+                    }, 3000);
+                } else {
+                    throw new Error(result.error || 'Erro desconhecido');
+                }
+            })
+            .catch(error => {
+                console.error('Erro completo:', error);
+                
+                // Tentar com no-cors como fallback
+                console.log('Tentando com no-cors...');
+                return fetch(SCRIPT_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(dados)
+                })
+                .then(() => {
+                    console.log('Enviado com no-cors');
+                    mostrarMensagem('success', `📤 Dados enviados! Protocolo: ${dados.protocolo} (Verifique a planilha)`);
+                    setTimeout(() => {
+                        limparFormulario();
+                    }, 3000);
+                })
+                .catch(finalError => {
+                    console.error('Erro final:', finalError);
+                    mostrarMensagem('error', `❌ Erro de conexão: ${finalError.message}`);
+                });
+            })
+            .finally(() => {
+                loadingBtn.textContent = textoOriginal;
+                loadingBtn.disabled = false;
+            });
+        }
+
+        function limparFormulario() {
+            console.log('Limpando formulário...');
+            document.getElementById('tagForm').reset();
+            document.getElementById('telefone').value = '';
+            document.getElementById('contribuinte').checked = false;
+            
+            // Limpar seleções de itens
+            document.getElementById('selecionarTag').checked = false;
+            document.getElementById('selecionarControle').checked = false;
+            toggleItemCard('tag', false);
+            toggleItemCard('controle', false);
+            
+            // Reset quantidades
+            document.getElementById('qtdTag').value = '1';
+            document.getElementById('qtdControle').value = '1';
+            document.getElementById('reposicaoTag').checked = false;
+            document.getElementById('reposicaoControle').checked = false;
+            
+            // Ocultar seção PIX
+            document.getElementById('pixSection').classList.remove('show');
+            
+            atualizarCalculos();
+            ocultarMensagens();
+        }
+
+        function mostrarMensagem(tipo, texto) {
+            console.log(`Mensagem ${tipo}:`, texto);
+            ocultarMensagens();
+            const elemento = document.getElementById(tipo === 'success' ? 'successMessage' : 'errorMessage');
+            elemento.innerHTML = texto;
+            elemento.style.display = 'block';
+            
+            setTimeout(ocultarMensagens, 8000);
+        }
+
+        function ocultarMensagens() {
+            document.getElementById('successMessage').style.display = 'none';
+            document.getElementById('errorMessage').style.display = 'none';
+        }
+
+        function formatarTelefone(telefone) {
+            const limpo = telefone.replace(/\D/g, '');
+            if (limpo.length === 11) {
+                return `(${limpo.slice(0,2)}) ${limpo.slice(2,7)}-${limpo.slice(7)}`;
+            } else if (limpo.length === 10) {
+                return `(${limpo.slice(0,2)}) ${limpo.slice(2,6)}-${limpo.slice(6)}`;
+            }
+            return telefone;
+        }
+
+        function limparTelefone(telefone) {
+            return telefone.replace(/\D/g, '');
+        }
+
+        function gerarProtocolo() {
+            return 'TAG' + Date.now().toString().slice(-6) + Math.random().toString(36).substr(2, 3).toUpperCase();
+        }
+    </script>
+</body>
+</html>
